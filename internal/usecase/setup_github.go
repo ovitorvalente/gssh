@@ -1,14 +1,8 @@
 package usecase
 
 import (
-	"github.com/ovitorvalente/gssh/internal/domain"
 	"github.com/ovitorvalente/gssh/internal/port"
 )
-
-type SetupResult struct {
-	PublicKey  *domain.PublicKey
-	AddKeyWarn error
-}
 
 type SetupGitHubUseCase struct {
 	keyRepository port.KeyRepository
@@ -22,22 +16,20 @@ func NewSetupGitHubUseCase(keyRepository port.KeyRepository, sshSystem port.SSHS
 	}
 }
 
-func (s *SetupGitHubUseCase) Execute() (*SetupResult, error) {
-	if !s.keyRepository.Exists() {
-		if err := s.keyRepository.Generate(); err != nil {
-			return nil, err
-		}
+func (s *SetupGitHubUseCase) EnsureKeyExists() (existed bool, err error) {
+	if s.keyRepository.Exists() {
+		return true, nil
 	}
-
-	addKeyWarn := s.sshSystem.AddKey()
-
-	pub, err := s.keyRepository.ReadPublicKey()
-	if err != nil {
-		return nil, err
+	if err := s.keyRepository.Generate(); err != nil {
+		return false, err
 	}
+	return false, nil
+}
 
-	return &SetupResult{
-		PublicKey:  &domain.PublicKey{Content: pub},
-		AddKeyWarn: addKeyWarn,
-	}, nil
+func (s *SetupGitHubUseCase) AddKeyToAgent() error {
+	return s.sshSystem.AddKey()
+}
+
+func (s *SetupGitHubUseCase) GetPublicKey() (string, error) {
+	return s.keyRepository.ReadPublicKey()
 }
