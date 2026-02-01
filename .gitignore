@@ -1,0 +1,5 @@
+gssh
+*.exe
+*.test
+*.out
+/vendor/
