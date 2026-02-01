@@ -5,6 +5,7 @@ import (
 
 	"github.com/ovitorvalente/gssh/internal/adapter"
 	"github.com/ovitorvalente/gssh/internal/usecase"
+	"github.com/ovitorvalente/gssh/pkg/clipboard"
 	"github.com/ovitorvalente/gssh/pkg/ui"
 	"github.com/spf13/cobra"
 )
@@ -39,6 +40,8 @@ func helpCommand() *cobra.Command {
 }
 
 func setupCommand() *cobra.Command {
+	var noCopy bool
+
 	return &cobra.Command{
 		Use:   "setup",
 		Short: "Configura chave SSH e exibe instruções para o GitHub",
@@ -71,7 +74,15 @@ func setupCommand() *cobra.Command {
 				out.PrintAddKeyWarning(result.AddKeyWarn)
 			}
 
-			out.PrintConfigurationCompleted(result.PublicKey.Content)
+			copied := false
+			if !noCopy {
+				copied = clipboard.Copy(result.PublicKey.Content)
+				if !copied {
+					out.PrintClipboardUnavailable()
+				}
+			}
+
+			out.PrintConfigurationCompleted(result.PublicKey.Content, copied)
 			return nil
 		},
 	}
