@@ -16,8 +16,23 @@ const (
 	TestCommand          = "     $ ssh -T git@github.com"
 	WarningAddKey        = "  ⚠ Não foi possível adicionar ao ssh-agent (pode ignorar)"
 	ErrorPrefix          = "  ❌"
+	StepOk               = "✔"
+	StepSkip             = "○"
+	StepWarn             = "⚠"
+	StepFail             = "✗"
 	KeyCopiedClipboard   = "  ✔ Chave copiada para área de transferência"
 	ClipboardUnavailable = "  ⚠ Não foi possível copiar para área de transferência (copie manualmente)"
 	OpenBrowserMessage   = "   Abrindo navegador para adicionar chave..."
 	BrowserOpenFailed    = "  ⚠ Não foi possível abrir o navegador (copie manualmente)"
+
+	// Mensagens dos steps
+	StepCheckingKey  = "Verificando chave SSH..."
+	StepKeyFound     = "Chave encontrada"
+	StepGenerating   = "Gerando chave SSH..."
+	StepKeyGenerated = "Chave gerada"
+	StepAddingAgent  = "Adicionando ao ssh-agent..."
+	StepAgentOk      = "Chave adicionada"
+	StepAgentWarn    = "Não foi possível adicionar (pode ignorar)"
+	StepReadingKey   = "Lendo chave pública..."
+	StepKeyRead      = "Pronto"
 )

@@ -6,13 +6,12 @@ import (
 	"strings"
 )
 
-// Output define a interface para saída do CLI (facilita testes).
 type Output interface {
 	PrintHeader()
 	PrintKeyExists()
 	PrintGenerating()
 	PrintKeyGenerated()
-	PrintConfigurationCompleted(publicKey string)
+	PrintConfigurationCompleted(publicKey string, copied bool, noCopy bool)
 	PrintError(format string, args ...interface{})
 	PrintAddKeyWarning(err error)
 	PrintKeyCopiedClipboard()
@@ -31,93 +30,90 @@ func NewPrinter(out io.Writer) *Printer {
 
 func (p *Printer) PrintHeader() {
 	fmt.Fprintln(p.out)
-	fmt.Fprintln(p.out, Header)
-	fmt.Fprintln(p.out, Separator)
+	fmt.Fprintln(p.out, styleHeader.Render("  🔐  GitHub SSH Setup  "))
+	fmt.Fprintln(p.out, styleSeparator.Render("  ───────────────────────────────────"))
 	fmt.Fprintln(p.out)
 }
 
 func (p *Printer) PrintKeyExists() {
-	fmt.Fprintln(p.out, KeyExists)
-}
-
-func (p *Printer) PrintGenerating() {
-	fmt.Fprintln(p.out, GeneratingKey)
+	fmt.Fprintln(p.out, styleOk.Render("  ✔ ")+styleMessage.Render("Chave SSH encontrada"))
 }
 
 func (p *Printer) PrintKeyGenerated() {
-	fmt.Fprintln(p.out, KeyGenerated)
+	fmt.Fprintln(p.out, styleOk.Render("  ✔ ")+styleMessage.Render("Chave gerada com sucesso"))
 	fmt.Fprintln(p.out)
 }
 
-func (p *Printer) PrintConfigurationCompleted(publicKey string, copied bool) {
-	chave := strings.TrimSpace(publicKey)
-	fmt.Fprintln(p.out)
-	fmt.Fprintln(p.out, ConfigDone)
-	fmt.Fprintln(p.out, NextSteps)
-	fmt.Fprintln(p.out)
-	fmt.Fprintln(p.out, Step1)
+func (p *Printer) PrintGenerating() {
+	fmt.Fprintln(p.out, styleMessage.Render("  ➜ Gerando nova chave SSH..."))
+}
 
-	if !copied {
-		p.PrintClipboardUnavailable()
-	}
-
+func (p *Printer) PrintConfigurationCompleted(publicKey string, copied bool, noCopy bool) {
+	key := strings.TrimSpace(publicKey)
+	fmt.Fprintln(p.out)
+	fmt.Fprintln(p.out, styleOk.Render("  ✔ Tudo pronto! ")+styleMessage.Render("Adicione a chave no GitHub:"))
+	fmt.Fprintln(p.out)
 	if copied {
-		p.PrintKeyCopiedClipboard()
+		fmt.Fprintln(p.out, styleOk.Render("  ✔ Chave copiada para área de transferência"))
+	} else if !noCopy {
+		fmt.Fprintln(p.out, styleMessage.Render("  1. Copie a chave pública (linha abaixo):"))
+		fmt.Fprintln(p.out, styleWarn.Render("  ⚠ Não foi possível copiar (copie manualmente)"))
+	} else {
+		fmt.Fprintln(p.out, styleMessage.Render("  1. Copie a chave pública (linha abaixo):"))
 	}
-
-	fmt.Fprintf(p.out, "     %s\n", chave)
+	fmt.Fprintf(p.out, "     %s\n", styleKey.Render(key))
 	fmt.Fprintln(p.out)
-	fmt.Fprintln(p.out, Step2)
-	fmt.Fprintf(p.out, "     %s\n", GithubSSHURL)
+	fmt.Fprintln(p.out, styleMessage.Render("  2. Abra este link no navegador:"))
+	fmt.Fprintln(p.out, "     "+styleLink.Render(GithubSSHURL))
 	fmt.Fprintln(p.out)
-	fmt.Fprintln(p.out, Step3)
+	fmt.Fprintln(p.out, styleMessage.Render("  3. Cole a chave e clique em \"Add SSH key\""))
 	fmt.Fprintln(p.out)
-	fmt.Fprintln(p.out, Step4)
-	fmt.Fprintln(p.out, TestCommand)
+	fmt.Fprintln(p.out, styleMessage.Render("  4. Teste a conexão:"))
+	fmt.Fprintln(p.out, "     "+styleCommand.Render("$ ssh -T git@github.com"))
 	fmt.Fprintln(p.out)
 }
 
 func (p *Printer) PrintError(format string, args ...interface{}) {
-	fmt.Fprintln(p.out, ErrorPrefix, fmt.Sprintf(format, args...))
+	fmt.Fprintln(p.out, styleFail.Render("  ❌")+" "+styleMessage.Render(fmt.Sprintf(format, args...)))
 }
 
 func (p *Printer) PrintAddKeyWarning(err error) {
-	fmt.Fprintln(p.out, WarningAddKey)
+	fmt.Fprintln(p.out, styleWarn.Render("  ⚠")+" "+styleMessage.Render("Não foi possível adicionar ao ssh-agent"))
 	fmt.Fprintln(p.out, "    ", err)
 }
 
 func (p *Printer) PrintKeyCopiedClipboard() {
-	fmt.Fprintln(p.out, KeyCopiedClipboard)
+	fmt.Fprintln(p.out, styleOk.Render("  ✔ Chave copiada para área de transferência"))
 }
 
 func (p *Printer) PrintClipboardUnavailable() {
-	fmt.Fprintln(p.out, ClipboardUnavailable)
+	fmt.Fprintln(p.out, styleWarn.Render("  ⚠ Não foi possível copiar para área de transferência (copie manualmente)"))
 }
 
 func (p *Printer) PrintOpenBrowserMessage() {
-	fmt.Fprintln(p.out, OpenBrowserMessage)
+	fmt.Fprintln(p.out, styleMessage.Render("  Abrindo navegador para adicionar chave..."))
 }
 
 func (p *Printer) PrintBrowserOpenFailed() {
-	fmt.Fprintln(p.out, BrowserOpenFailed)
+	fmt.Fprintln(p.out, styleWarn.Render("  ⚠ Não foi possível abrir o navegador (copie manualmente)"))
 }
 
 func (p *Printer) PrintHelp() {
 	fmt.Fprintln(p.out)
-	fmt.Fprintln(p.out, HelpTitle)
-	fmt.Fprintln(p.out, HelpSeparator)
+	fmt.Fprintln(p.out, styleHeader.Render("  📖  gssh — Ajuda  "))
+	fmt.Fprintln(p.out, styleSeparator.Render("  ───────────────────────────────────"))
 	fmt.Fprintln(p.out)
-	fmt.Fprintln(p.out, HelpDescription)
+	fmt.Fprintln(p.out, styleMessage.Render(HelpDescription))
 	fmt.Fprintln(p.out)
-	fmt.Fprintln(p.out, HelpUsage)
+	fmt.Fprintln(p.out, styleMessage.Render(HelpUsage))
 	fmt.Fprintln(p.out)
-	fmt.Fprintln(p.out, HelpUsageExample)
+	fmt.Fprintln(p.out, styleMessage.Render(HelpUsageExample))
 	fmt.Fprintln(p.out)
-	fmt.Fprintln(p.out, HelpCommands)
+	fmt.Fprintln(p.out, styleMessage.Render(HelpCommands))
 	fmt.Fprintln(p.out)
-	fmt.Fprintln(p.out, HelpSetup)
+	fmt.Fprintln(p.out, styleMessage.Render(HelpRun))
 	fmt.Fprintln(p.out)
-	fmt.Fprintln(p.out, HelpMoreInfo)
-	fmt.Fprintln(p.out, HelpRepo)
+	fmt.Fprintln(p.out, styleMessage.Render(HelpMoreInfo))
+	fmt.Fprintln(p.out, styleLink.Render(HelpRepo))
 	fmt.Fprintln(p.out)
 }
