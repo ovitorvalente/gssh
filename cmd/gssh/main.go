@@ -21,7 +21,21 @@ func rootCmd() *cobra.Command {
 		Short: "Configura SSH para desenvolvimento com GitHub",
 	}
 	root.AddCommand(setupCommand())
+	root.AddCommand(helpCommand())
+
 	return root
+}
+
+func helpCommand() *cobra.Command {
+	return &cobra.Command{
+		Use:   "help",
+		Short: "Exibe documentação e instruções de uso",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			out := ui.NewPrinter(cmd.OutOrStdout())
+			out.PrintHelp()
+			return nil
+		},
+	}
 }
 
 func setupCommand() *cobra.Command {
