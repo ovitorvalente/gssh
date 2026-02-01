@@ -32,4 +32,3 @@ O comando irá:
 ## Requisitos
 
 - `ssh-keygen` e `ssh-add` instalados (geralmente incluídos no OpenSSH)
-- Git configurado com seu nome e email
