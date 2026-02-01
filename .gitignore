@@ -1,4 +1,4 @@
-gssh
+/gssh
 *.exe
 *.test
 *.out
