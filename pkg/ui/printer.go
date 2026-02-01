@@ -72,3 +72,23 @@ func (p *Printer) PrintAddKeyWarning(err error) {
 	fmt.Fprintln(p.out, WarningAddKey)
 	fmt.Fprintln(p.out, "    ", err)
 }
+
+func (p *Printer) PrintHelp() {
+	fmt.Fprintln(p.out)
+	fmt.Fprintln(p.out, HelpTitle)
+	fmt.Fprintln(p.out, HelpSeparator)
+	fmt.Fprintln(p.out)
+	fmt.Fprintln(p.out, HelpDescription)
+	fmt.Fprintln(p.out)
+	fmt.Fprintln(p.out, HelpUsage)
+	fmt.Fprintln(p.out)
+	fmt.Fprintln(p.out, HelpUsageExample)
+	fmt.Fprintln(p.out)
+	fmt.Fprintln(p.out, HelpCommands)
+	fmt.Fprintln(p.out)
+	fmt.Fprintln(p.out, HelpSetup)
+	fmt.Fprintln(p.out)
+	fmt.Fprintln(p.out, HelpMoreInfo)
+	fmt.Fprintln(p.out, HelpRepo)
+	fmt.Fprintln(p.out)
+}
