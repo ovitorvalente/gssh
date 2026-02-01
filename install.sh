@@ -15,5 +15,5 @@ echo "📦 Instalando o gssh no diretório $INSTALL_DIR (sudo requer senha)"
 sudo mv "$BIN_NAME" "$INSTALL_DIR"
 
 echo "✅ gssh instalado com sucesso!"
-echo "🔗 Para usar, execute: gssh setup"
+echo "🔗 Para usar, execute: gssh run"
 echo "💡 Para ver a documentação: gssh help"
