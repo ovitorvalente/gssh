@@ -15,6 +15,10 @@ type Output interface {
 	PrintConfigurationCompleted(publicKey string)
 	PrintError(format string, args ...interface{})
 	PrintAddKeyWarning(err error)
+	PrintKeyCopiedClipboard()
+	PrintClipboardUnavailable()
+	PrintOpenBrowserMessage()
+	PrintBrowserOpenFailed()
 }
 
 type Printer struct {
@@ -45,13 +49,22 @@ func (p *Printer) PrintKeyGenerated() {
 	fmt.Fprintln(p.out)
 }
 
-func (p *Printer) PrintConfigurationCompleted(publicKey string) {
+func (p *Printer) PrintConfigurationCompleted(publicKey string, copied bool) {
 	chave := strings.TrimSpace(publicKey)
 	fmt.Fprintln(p.out)
 	fmt.Fprintln(p.out, ConfigDone)
 	fmt.Fprintln(p.out, NextSteps)
 	fmt.Fprintln(p.out)
 	fmt.Fprintln(p.out, Step1)
+
+	if !copied {
+		p.PrintClipboardUnavailable()
+	}
+
+	if copied {
+		p.PrintKeyCopiedClipboard()
+	}
+
 	fmt.Fprintf(p.out, "     %s\n", chave)
 	fmt.Fprintln(p.out)
 	fmt.Fprintln(p.out, Step2)
@@ -71,6 +84,22 @@ func (p *Printer) PrintError(format string, args ...interface{}) {
 func (p *Printer) PrintAddKeyWarning(err error) {
 	fmt.Fprintln(p.out, WarningAddKey)
 	fmt.Fprintln(p.out, "    ", err)
+}
+
+func (p *Printer) PrintKeyCopiedClipboard() {
+	fmt.Fprintln(p.out, KeyCopiedClipboard)
+}
+
+func (p *Printer) PrintClipboardUnavailable() {
+	fmt.Fprintln(p.out, ClipboardUnavailable)
+}
+
+func (p *Printer) PrintOpenBrowserMessage() {
+	fmt.Fprintln(p.out, OpenBrowserMessage)
+}
+
+func (p *Printer) PrintBrowserOpenFailed() {
+	fmt.Fprintln(p.out, BrowserOpenFailed)
 }
 
 func (p *Printer) PrintHelp() {
