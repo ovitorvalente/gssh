@@ -8,18 +8,14 @@ CLI para configurar chave SSH e preparar o ambiente para desenvolvimento com Git
 go install github.com/ovitorvalente/gssh/cmd/gssh@latest
 ```
 
-Ou clone e construa localmente:
-
-```bash
-git clone https://github.com/ovitorvalente/gssh.git
-cd gssh
-go build -o gssh ./cmd/gssh
-```
+Ou baixe o binário da [última release](https://github.com/ovitorvalente/gssh/releases).
 
 ## Uso
 
 ```bash
-gssh setup
+gssh run
+gssh version   # exibe versão, commit e data de build
+gssh help      # documentação
 ```
 
 O comando irá:
@@ -32,3 +28,19 @@ O comando irá:
 ## Requisitos
 
 - `ssh-keygen` e `ssh-add` instalados (geralmente incluídos no OpenSSH)
+
+## Desenvolvimento
+
+### Build local
+
+```bash
+make build    # build com versão dev
+make test     # executa testes
+make install  # instala em $GOPATH/bin
+```
+
+### Versionamento e releases
+
+1. Crie uma tag no formato `vX.Y.Z` (ex: `v1.0.0`)
+2. Faça push da tag: `git push origin v1.0.0`
+3. O GitHub Actions builda automaticamente e publica a release com binários para Linux, macOS e Windows
